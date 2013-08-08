@@ -7,9 +7,9 @@
  */
 function Vessel(name, position, capacity) {
     this.name = name;
-    this.position = position;
+    this.setPosition(position);
     this.capacity = capacity;
-    this.loaded = 0;
+    this.cargo = 0;
 }
 
 /**
@@ -30,7 +30,7 @@ Vessel.prototype.report = function () {
  * @name Vessel.getFreeSpace
  */
 Vessel.prototype.getFreeSpace = function () {
-    return this.capacity - this.loaded;
+    return this.capacity - this.cargo;
 };
 
 /**
@@ -38,7 +38,7 @@ Vessel.prototype.getFreeSpace = function () {
  * @name Vessel.getOccupiedSpace
  */
 Vessel.prototype.getOccupiedSpace = function () {
-    return this.loaded;
+    return this.cargo;
 };
 
 /**
@@ -51,7 +51,26 @@ Vessel.prototype.getOccupiedSpace = function () {
  * vessel.flyTo(earth);
  * @name Vessel.report
  */
-Vessel.prototype.flyTo = function (newPosition) {}
+Vessel.prototype.flyTo = function (newPosition) {
+    this.setPosition(newPosition);
+};
+
+/**
+ * Устанавливаем координаты корабля в зависимести от типа переданного местоположения: координаты или планета
+ * 
+ * @param {Number}[]|Planet newPosition Новое местоположение корабля.
+ */
+Vessel.prototype.setPosition = function (newPosition) {
+    if (newPosition instanceof Planet) {
+        this.position = newPosition.position;
+        return;
+    }
+    if (newPosition instanceof Array && newPosition.length === 2) {
+        this.position = newPosition;
+        return;
+    }
+    document.write("Новая позиция не верна.");
+};
 
 /**
  * Создает экземпляр планеты.
@@ -60,19 +79,28 @@ Vessel.prototype.flyTo = function (newPosition) {}
  * @param {Number}[] position Местоположение планеты.
  * @param {Number} availableAmountOfCargo Доступное количество груза.
  */
-function Planet(name, position, availableAmountOfCargo) {}
+function Planet(name, position, availableAmountOfCargo) {
+    this.name = name;
+    this.position = position;
+    this.cargo = availableAmountOfCargo;
+}
 
 /**
  * Выводит текущее состояние планеты: имя, местоположение, количество доступного груза.
  * @name Planet.report
  */
-Planet.prototype.report = function () {}
+Planet.prototype.report = function () {
+    document.write('Планета "' + this.name + '". Местоположение: ' + this.position +
+            '. Доступно груза: ' + this.getAvailableAmountOfCargo() + ' т.<br>');
+};
 
 /**
  * Возвращает доступное количество груза планеты.
  * @name Vessel.getAvailableAmountOfCargo
  */
-Planet.prototype.getAvailableAmountOfCargo = function () {}
+Planet.prototype.getAvailableAmountOfCargo = function () {
+    return this.cargo;
+};
 
 /**
  * Загружает на корабль заданное количество груза.
@@ -82,7 +110,22 @@ Planet.prototype.getAvailableAmountOfCargo = function () {}
  * @param {Number} cargoWeight Вес загружаемого груза.
  * @name Vessel.loadCargoTo
  */
-Planet.prototype.loadCargoTo = function (vessel, cargoWeight) {}
+Planet.prototype.loadCargoTo = function (vessel, cargoWeight) {
+    if (!this.vesselOnPlanet(vessel)) {
+        return;
+    }
+    if (vessel.getFreeSpace() < cargoWeight) {
+        document.write('Невозможно загрузить: нехватает свободного места на корабле<br>');
+        return;
+    }
+    if (this.getAvailableAmountOfCargo() < cargoWeight) {
+        document.write('Невозможно загрузить: на планете нет такого количества груза<br>');
+        return;
+    }
+    vessel.cargo += cargoWeight;
+    this.cargo -= cargoWeight;
+    document.write('На корабль "' + vessel.name + '" загружено ' + cargoWeight + ' т. <br>');
+};
 
 /**
  * Выгружает с корабля заданное количество груза.
@@ -92,4 +135,27 @@ Planet.prototype.loadCargoTo = function (vessel, cargoWeight) {}
  * @param {Number} cargoWeight Вес выгружаемого груза.
  * @name Vessel.unloadCargoFrom
  */
-Planet.prototype.unloadCargoFrom = function (vessel, cargoWeight) {}
+Planet.prototype.unloadCargoFrom = function (vessel, cargoWeight) {
+    if (!this.vesselOnPlanet(vessel)) {
+        return;
+    }
+    if (vessel.getOccupiedSpace() < cargoWeight) {
+        document.write('Невозможно выгрузить: на корабле нет такого количества груза<br>');
+        return;
+    }
+    vessel.cargo -= cargoWeight;
+    this.cargo += cargoWeight;
+};
+/**
+ * Проверяет, сел ли корабль на планету (совпадают-ли их координаты)
+ * 
+ * @param {Vessel} vessel Проверяемый корабль
+ * @returns {Boolean} Результат true - корабль сел на планету
+ */
+Planet.prototype.vesselOnPlanet = function (vessel) {
+    if (!((vessel.position[0] === this.position[0]) && (vessel.position[1] === this.position[1]))) {
+        document.write('Невозможно загрузить: корабль не сел на планету<br>');
+        return false;
+    }
+    return true;
+};
