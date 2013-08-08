@@ -21,20 +21,25 @@ function Vessel(name, position, capacity) {
  * @name Vessel.report
  */
 Vessel.prototype.report = function () {
-    document.write('Корабль "' + this.name + '". Местоположение: ' + this.position + '. Занято ' + (this.loaded) + ' т. из ' + this.capacity + ' т.<br>');
+    document.write('Корабль "' + this.name + '". Местоположение: ' + this.position +
+            '. Занято ' + this.getOccupiedSpace() + ' т. из ' + this.capacity + ' т.<br>');
 };
 
 /**
  * Выводит количество свободного места на корабле.
  * @name Vessel.getFreeSpace
  */
-Vessel.prototype.getFreeSpace = function () {}
+Vessel.prototype.getFreeSpace = function () {
+    return this.capacity - this.loaded;
+};
 
 /**
  * Выводит количество занятого места на корабле.
  * @name Vessel.getOccupiedSpace
  */
-Vessel.prototype.getOccupiedSpace = function () {}
+Vessel.prototype.getOccupiedSpace = function () {
+    return this.loaded;
+};
 
 /**
  * Переносит корабль в указанную точку.
