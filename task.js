@@ -5,7 +5,12 @@
  * @param {Number}[] position Местоположение корабля.
  * @param {Number} capacity Грузоподъемность корабля.
  */
-function Vessel(name, position, capacity) {}
+function Vessel(name, position, capacity) {
+    this.name = name;
+    this.position = position;
+    this.capacity = capacity;
+    this.loaded = 0;
+}
 
 /**
  * Выводит текущее состояние корабля: имя, местоположение, доступную грузоподъемность.
@@ -15,7 +20,9 @@ function Vessel(name, position, capacity) {}
  * vesserl.report(); // Грузовой корабль. Местоположение: 50,20. Груз: 200т.
  * @name Vessel.report
  */
-Vessel.prototype.report = function () {}
+Vessel.prototype.report = function () {
+    document.write('Корабль "' + this.name + '". Местоположение: ' + this.position + '. Занято ' + (this.loaded) + ' т. из ' + this.capacity + ' т.<br>');
+};
 
 /**
  * Выводит количество свободного места на корабле.
